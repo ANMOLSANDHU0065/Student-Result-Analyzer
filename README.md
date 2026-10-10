@@ -5,6 +5,10 @@
 ScholarDesk is a Python-based Student Result Analyzer developed to manage student records and analyze academic performance through a simple web interface.
 
 
+Explore my Student Result Analyzer project here:
+
+🚀 Live Demo
+🔗 View Live Project
 
 
 ## Features
