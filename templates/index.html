@@ -1,0 +1,1176 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#7D3345">
+<title>ScholarDesk | Student Result Analyzer</title>
+
+<style>
+:root {
+    --bg:#F8F7F3; --surface:#FFFFFF; --text:#29252A;
+    --muted:#77717A; --primary:#7D3345; --primary-hover:#642637;
+    --border:#E9E1E0; --soft:#F5EDEF; --green:#28784D;
+    --red:#BD3447; --amber:#B57A24;
+    --shadow:0 8px 30px rgba(55,28,35,.055);
+}
+body.dark {
+    --bg:#171519; --surface:#242127; --text:#F7F1F2;
+    --muted:#B5AAB0; --primary:#D68A9B; --primary-hover:#E8A5B4;
+    --border:#3B343B; --soft:#352A30; --green:#7ED5A2;
+    --red:#FF8793; --amber:#E5BC77;
+    --shadow:0 8px 30px rgba(0,0,0,.15);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 "Segoe UI",Arial,sans-serif;transition:background .2s,color .2s}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+.hidden{display:none!important}
+.muted,.subtle{color:var(--muted)}
+.small{font-size:12px;color:var(--muted)}
+.logged-out .topbar,.logged-out main,.logged-out footer{display:none}
+.auth-screen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:24px}
+.logged-out .auth-screen{display:flex}
+.auth-card{width:100%;max-width:430px;background:var(--surface);border:1px solid var(--border);border-radius:23px;padding:32px;box-shadow:var(--shadow)}
+.brand-mark{height:43px;width:43px;display:grid;place-items:center;border-radius:13px;background:var(--primary);color:#fff;font-weight:800;font-size:21px}
+.auth-card .brand-mark{height:52px;width:52px;font-size:26px;margin-bottom:20px}
+.auth-card h1{font-size:26px;line-height:1.25;margin:0 0 9px}
+.auth-card p{color:var(--muted);line-height:1.7}
+.auth-tabs{display:flex;gap:6px;padding:5px;border-radius:12px;background:var(--bg);margin:22px 0}
+.auth-tabs button{flex:1;padding:11px;border:0;border-radius:9px;background:transparent;color:var(--muted)}
+.auth-tabs button.active{background:var(--surface);color:var(--primary);font-weight:700;box-shadow:var(--shadow)}
+.field{display:flex;flex-direction:column;gap:7px;margin-bottom:15px;min-width:0}
+.field label{font-weight:650}
+input,select,textarea{width:100%;min-width:0;padding:11px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(125,51,69,.1)}
+textarea{resize:vertical;min-height:85px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 14px;border:1px solid transparent;border-radius:10px;font-weight:650;transition:background .15s,border .15s;white-space:nowrap}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-secondary{background:var(--surface);border-color:var(--border);color:var(--text)}
+.btn-secondary:hover{background:var(--soft)}
+.btn-danger{background:transparent;border-color:var(--border);color:var(--red)}
+.btn-danger:hover{background:var(--soft)}
+.btn-small{font-size:12px;padding:7px 10px}
+.btn-block{width:100%}
+.auth-message{min-height:20px;color:var(--red);margin:5px 0 12px}
+.topbar{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border)}
+.topbar-inner{max-width:1500px;margin:auto;padding:13px 25px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;white-space:nowrap}
+.brand small{display:block;font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.5px}
+nav{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+nav button{border:0;background:transparent;color:var(--muted);border-radius:9px;padding:10px 11px;white-space:nowrap}
+nav button:hover,nav button.active{background:var(--soft);color:var(--primary)}
+.top-actions{display:flex;align-items:center;gap:8px}
+#accountName{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avatar{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--soft);color:var(--primary);font-weight:800}
+main{max-width:1500px;margin:auto;padding:28px 25px 48px;min-height:calc(100vh - 140px)}
+.page{display:none}
+.page.active{display:block}
+.page-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:24px}
+.page-heading h1{font-size:29px;letter-spacing:-.7px;margin:0 0 7px}
+.page-heading p{margin:0;color:var(--muted);line-height:1.7}
+.eyebrow{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;color:var(--primary);font-weight:800;margin-bottom:7px}
+.button-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:21px}
+.stat-card,.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
+.stat-card{padding:19px;min-width:0}
+.stat-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.stat-label{font-size:13px;color:var(--muted)}
+.stat-icon{width:36px;height:36px;display:grid;place-items:center;background:var(--soft);border-radius:11px;color:var(--primary);font-weight:800}
+.stat-value{font-size:29px;font-weight:800;letter-spacing:-.8px;overflow-wrap:anywhere}
+.stat-foot{font-size:12px;color:var(--muted);margin-top:6px}
+.dashboard-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:18px}
+.panel{padding:21px;margin-bottom:20px;min-width:0}
+.panel-heading{display:flex;justify-content:space-between;align-items:center;gap:13px;margin-bottom:17px}
+.panel-heading h2,.panel h2{font-size:17px;margin:0 0 5px}
+.panel-heading p{font-size:12px;color:var(--muted);margin:0}
+.search-input{max-width:280px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.toolbar-left,.toolbar-right{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.toolbar select{width:auto;max-width:180px}
+.table-wrap{width:100%;overflow:auto;border-radius:8px}
+table{width:100%;border-collapse:collapse;text-align:left}
+th,td{padding:13px 11px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.55px;white-space:nowrap}
+td{line-height:1.6}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:rgba(125,51,69,.025)}
+.student-name{font-weight:750}
+.pill{display:inline-flex;align-items:center;padding:4px 9px;border-radius:30px;font-size:11px;font-weight:800;background:var(--soft);color:var(--primary);white-space:nowrap}
+.pill.pass{background:rgba(40,120,77,.12);color:var(--green)}
+.pill.fail{background:rgba(189,52,71,.12);color:var(--red)}
+.pill.neutral{background:var(--bg);color:var(--muted)}
+.empty-state{padding:35px 14px;text-align:center;color:var(--muted);line-height:1.8}
+.empty-icon{font-size:28px;margin-bottom:8px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}
+.marks-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 15px}
+.span-two{grid-column:1/-1}
+.form-section-title{font-size:16px;margin:5px 0 17px}
+.form-divider{border:0;border-top:1px solid var(--border);margin:20px 0}
+.form-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:15px}
+.kpi-list{display:grid;gap:17px}
+.kpi-row{display:grid;gap:7px}
+.kpi-label{display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.progress{height:8px;border-radius:20px;background:var(--soft);overflow:hidden}
+.progress span{display:block;height:100%;background:var(--primary);border-radius:20px;transition:width .2s}
+.grade-list{display:grid;gap:12px}
+.grade-row{display:grid;grid-template-columns:45px 1fr 25px;align-items:center;gap:10px}
+.grade-label{font-weight:800}
+.grade-bar{height:9px;border-radius:20px;background:var(--soft);overflow:hidden}
+.grade-bar span{display:block;height:100%;background:var(--primary)}
+.grade-count{text-align:right;color:var(--muted)}
+.quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.quick-action{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:15px 12px;text-align:left;color:var(--text)}
+.quick-action:hover{border-color:var(--primary);background:var(--soft)}
+.quick-action strong{display:block;margin-bottom:5px}
+.quick-action span{display:block;font-size:12px;color:var(--muted)}
+.preference-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 0;border-bottom:1px solid var(--border)}
+.preference-row:last-child{border-bottom:0}
+.preference-row strong{display:block;margin-bottom:4px}
+.preference-row p{font-size:12px;color:var(--muted);margin:0;line-height:1.6}
+.preference-control{max-width:230px;flex-shrink:0}
+.switch{position:relative;width:45px;height:25px;display:inline-block;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch-track{position:absolute;inset:0;border-radius:30px;background:var(--border);transition:.2s}
+.switch-track:before{content:"";position:absolute;width:19px;height:19px;left:3px;top:3px;background:white;border-radius:50%;transition:.2s}
+.switch input:checked + .switch-track{background:var(--primary)}
+.switch input:checked + .switch-track:before{transform:translateX(20px)}
+.profile-card{display:flex;align-items:center;gap:15px}
+.profile-avatar{height:55px;width:55px;display:grid;place-items:center;background:var(--soft);color:var(--primary);font-size:23px;font-weight:800;border-radius:16px}
+.profile-card h2{margin:0 0 5px}
+.notice-box{padding:13px 15px;background:var(--soft);border-radius:11px;color:var(--muted);font-size:12px;line-height:1.8}
+.pagination{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:17px}
+.pagination-actions{display:flex;gap:7px}
+.compact-table th,.compact-table td{padding:7px 9px}
+.toast{position:fixed;right:22px;bottom:22px;z-index:100;max-width:min(390px,calc(100% - 44px));padding:14px 18px;background:var(--text);color:var(--surface);border-radius:12px;box-shadow:var(--shadow);line-height:1.6}
+.toast.error{background:var(--red);color:#fff}
+.toast.success{background:var(--green);color:#fff}
+footer{text-align:center;padding:20px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
+body.large-text{font-size:16px}
+body.large-text .small,body.large-text .small-text{font-size:14px}
+@media(max-width:1150px){
+ .topbar-inner{flex-wrap:wrap}
+ nav{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap}
+ .dashboard-grid{grid-template-columns:1fr}
+}
+@media(max-width:800px){
+ .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .marks-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .top-actions{margin-left:auto}
+ .quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+ .topbar-inner{padding:12px}
+ .brand{font-size:16px}
+ .brand small{display:none}
+ #accountName{display:none}
+ main{padding:21px 13px 35px}
+ .page-heading{flex-direction:column}
+ .page-heading h1{font-size:25px}
+ .stats-grid{gap:9px}
+ .stat-card{padding:13px}
+ .stat-value{font-size:24px}
+ .panel{padding:14px}
+ .panel-heading{align-items:flex-start;flex-direction:column}
+ .search-input{max-width:none}
+ .form-grid,.marks-grid{grid-template-columns:1fr}
+ .span-two{grid-column:auto}
+ .auth-card{padding:23px}
+ .quick-grid{grid-template-columns:1fr}
+ .preference-row{align-items:flex-start}
+ .preference-control{max-width:48%}
+ .button-row .btn{flex:1}
+}
+</style>
+</head>
+
+<body class="logged-out">
+
+<!-- AUTH SCREEN -->
+<section class="auth-screen" id="authScreen">
+ <div class="auth-card">
+  <div class="brand-mark">S</div>
+  <div class="eyebrow">YOUR ACADEMIC WORKSPACE</div>
+  <h1>Welcome to ScholarDesk</h1>
+  <p>Keep student records, results and performance organized in one place.</p>
+
+  <div class="auth-tabs">
+   <button type="button" id="loginTab" class="active">Login</button>
+   <button type="button" id="registerTab">Create Account</button>
+  </div>
+
+  <form id="authForm">
+   <div class="field hidden" id="authNameField">
+    <label for="authName">Full Name</label>
+    <input id="authName" autocomplete="name" maxlength="100" placeholder="Enter your name">
+   </div>
+   <div class="field">
+    <label for="authEmail">Email Address</label>
+    <input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com">
+   </div>
+   <div class="field">
+    <label for="authPassword">Password</label>
+    <input id="authPassword" type="password" minlength="8" autocomplete="current-password" required placeholder="At least 8 characters">
+   </div>
+   <div class="auth-message" id="authMessage" role="alert"></div>
+   <button class="btn btn-primary btn-block" id="authSubmit" type="submit">Login</button>
+  </form>
+  <p class="small">Your student records are separated by account.</p>
+ </div>
+</section>
+
+<!-- NAVIGATION -->
+<header class="topbar">
+ <div class="topbar-inner">
+  <div class="brand">
+   <div class="brand-mark">S</div>
+   <div>ScholarDesk<small>STUDENT RESULT ANALYZER</small></div>
+  </div>
+
+  <nav aria-label="Main navigation">
+   <button class="active" data-page="dashboard">Dashboard</button>
+   <button data-page="students">Students</button>
+   <button data-page="details">Student Details</button>
+   <button data-page="results">Results</button>
+   <button data-page="analytics">Analytics</button>
+   <button data-page="settings">Settings</button>
+  </nav>
+
+  <div class="top-actions">
+   <div class="avatar" id="accountAvatar">S</div>
+   <span id="accountName" class="small"></span>
+   <button class="btn btn-secondary" id="themeBtn" type="button">☾ Dark</button>
+   <button class="btn btn-secondary" id="logoutBtn" type="button">Logout</button>
+  </div>
+ </div>
+</header>
+
+<main>
+<!-- DASHBOARD -->
+<section class="page active" id="page-dashboard">
+ <div class="page-heading">
+  <div>
+   <div class="eyebrow" id="welcomeEyebrow">YOUR OVERVIEW</div>
+   <h1 id="welcomeTitle">Dashboard</h1>
+   <p>Track your student records and academic performance.</p>
+  </div>
+  <button class="btn btn-primary" type="button" id="dashboardAddBtn">＋ Add Student</button>
+ </div>
+
+ <div class="stats-grid">
+  <div class="stat-card">
+   <div class="stat-top"><span class="stat-label">Total Students</span><span class="stat-icon">ST</span></div>
+   <div class="stat-value" id="statStudents">0</div>
+   <div class="stat-foot">Records in your account</div>
+  </div>
+  <div class="stat-card">
+   <div class="stat-top"><span class="stat-label">Passed Students</span><span class="stat-icon">✓</span></div>
+   <div class="stat-value" id="statPassed">0</div>
+   <div class="stat-foot">All subjects at least 33</div>
+  </div>
+  <div class="stat-card">
+   <div class="stat-top"><span class="stat-label">Failed Students</span><span class="stat-icon">!</span></div>
+   <div class="stat-value" id="statFailed">0</div>
+   <div class="stat-foot">May need improvement</div>
+  </div>
+  <div class="stat-card">
+   <div class="stat-top"><span class="stat-label">Class Average</span><span class="stat-icon">%</span></div>
+   <div class="stat-value" id="statAverage">0%</div>
+   <div class="stat-foot">Average percentage</div>
+  </div>
+ </div>
+
+ <div class="dashboard-grid">
+  <div class="panel">
+   <div class="panel-heading">
+    <div><h2>Recent Students</h2><p>Your latest student records</p></div>
+    <button class="btn btn-secondary btn-small" data-goto="students">View all →</button>
+   </div>
+   <div class="table-wrap">
+    <table><thead><tr><th>Student</th><th>Percentage</th><th>Grade</th><th>Status</th></tr></thead>
+    <tbody id="recentBody"></tbody></table>
+   </div>
+   <div id="recentEmpty" class="empty-state hidden">
+    <div class="empty-icon">▤</div><strong>No students yet</strong><br>Add your first student to get started.
+    <br><br><button class="btn btn-primary" data-add-student>Add Student</button>
+   </div>
+  </div>
+
+  <div>
+   <div class="panel">
+    <div class="panel-heading"><div><h2>Performance Snapshot</h2><p>Subject-wise average marks</p></div></div>
+    <div class="kpi-list" id="dashboardSubjects"></div>
+    <div id="dashboardSubjectsEmpty" class="empty-state hidden">Subject averages will appear after you add students.</div>
+   </div>
+   <div class="panel">
+    <div class="panel-heading"><div><h2>Quick Actions</h2><p>Common tasks, one click away</p></div></div>
+    <div class="quick-grid">
+     <button class="quick-action" data-add-student><strong>＋ Add Student</strong><span>Create a new record</span></button>
+     <button class="quick-action" data-goto="details"><strong>▤ Details</strong><span>View personal information</span></button>
+     <button class="quick-action" data-goto="results"><strong>✓ Results</strong><span>Check marks and grades</span></button>
+     <button class="quick-action" id="quickExport"><strong>↓ Export CSV</strong><span>Download your records</span></button>
+     <button class="quick-action" data-goto="analytics"><strong>▥ Analytics</strong><span>Review performance</span></button>
+     <button class="quick-action" data-goto="settings"><strong>⚙ Settings</strong><span>Personalize your workspace</span></button>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- STUDENTS -->
+<section class="page" id="page-students">
+ <div class="page-heading">
+  <div><div class="eyebrow">RECORD MANAGEMENT</div><h1>Students</h1><p>Add, update, search and manage your student records.</p></div>
+  <div class="button-row">
+   <button class="btn btn-secondary" id="exportBtn">↓ Export CSV</button>
+   <button class="btn btn-primary" id="studentsAddBtn">＋ Add Student</button>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="toolbar">
+   <div class="toolbar-left"><strong>All Students</strong><span class="pill neutral" id="studentCountLabel">0 records</span></div>
+   <div class="toolbar-right">
+    <input class="search-input" type="search" id="studentsSearch" placeholder="Search name or roll number">
+    <select id="studentSort" aria-label="Sort students">
+     <option value="newest">Newest first</option>
+     <option value="name">Name A–Z</option>
+     <option value="percentage-high">Highest percentage</option>
+     <option value="percentage-low">Lowest percentage</option>
+     <option value="roll">Roll number</option>
+    </select>
+   </div>
+  </div>
+  <div class="table-wrap">
+   <table id="studentsTable">
+    <thead><tr><th>Student</th><th>Roll Number</th><th>Total / 500</th><th>Percentage</th><th>Grade</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="studentsBody"></tbody>
+   </table>
+  </div>
+  <div id="studentsEmpty" class="empty-state hidden"><div class="empty-icon">▤</div><strong>No matching students</strong><br>Try another search or add a student.</div>
+  <div class="pagination">
+   <span class="small" id="paginationInfo">Showing 0 records</span>
+   <div class="pagination-actions">
+    <button class="btn btn-secondary btn-small" id="prevPage">← Previous</button>
+    <button class="btn btn-secondary btn-small" id="nextPage">Next →</button>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- STUDENT DETAILS -->
+<section class="page" id="page-details">
+ <div class="page-heading">
+  <div><div class="eyebrow">PERSONAL INFORMATION</div><h1>Student Details</h1><p>Contact and personal information saved with each student.</p></div>
+  <button class="btn btn-primary" id="detailsAddBtn">＋ Add Student</button>
+ </div>
+ <div class="panel">
+  <div class="toolbar">
+   <div class="toolbar-left"><strong>Personal Details</strong><span class="pill neutral" id="detailsCount">0 records</span></div>
+   <input type="search" class="search-input" id="detailsSearch" placeholder="Search personal details">
+  </div>
+  <div class="table-wrap">
+   <table><thead><tr><th>Name / Roll</th><th>Email</th><th>Phone</th><th>Date of Birth</th><th>Gender</th><th>Address</th><th>Action</th></tr></thead>
+   <tbody id="detailsBody"></tbody></table>
+  </div>
+  <div id="detailsEmpty" class="empty-state hidden">No personal details found. Add a student to begin.</div>
+ </div>
+</section>
+
+<!-- RESULTS -->
+<section class="page" id="page-results">
+ <div class="page-heading">
+  <div><div class="eyebrow">ACADEMIC PERFORMANCE</div><h1>Results</h1><p>View marks, totals, percentages, grades and pass/fail status.</p></div>
+  <div class="button-row"><button class="btn btn-secondary" id="resultsExportBtn">↓ Export CSV</button><button class="btn btn-primary" data-add-student>＋ Add Student</button></div>
+ </div>
+ <div class="panel">
+  <div class="toolbar">
+   <div class="toolbar-left"><strong>Result Sheet</strong></div>
+   <input class="search-input" type="search" id="resultsSearch" placeholder="Search by name or roll">
+  </div>
+  <div class="table-wrap">
+   <table><thead><tr><th>Student</th><th>Python</th><th>Java</th><th>DBMS</th><th>Web Dev.</th><th>Networks</th><th>Total</th><th>Percent</th><th>Grade</th><th>Status</th></tr></thead>
+   <tbody id="resultsBody"></tbody></table>
+  </div>
+  <div id="resultsEmpty" class="empty-state hidden">No results found. Add a student and enter their marks.</div>
+ </div>
+</section>
+
+<!-- ANALYTICS -->
+<section class="page" id="page-analytics">
+ <div class="page-heading">
+  <div><div class="eyebrow">PERFORMANCE INSIGHTS</div><h1>Analytics</h1><p>Understand class performance with quick summaries.</p></div>
+  <button class="btn btn-secondary" id="analyticsRefreshBtn">↻ Refresh Data</button>
+ </div>
+ <div class="stats-grid">
+  <div class="stat-card"><div class="stat-top"><span class="stat-label">Pass Rate</span><span class="stat-icon">%</span></div><div class="stat-value" id="analyticsPassRate">0%</div><div class="stat-foot">Students passing all subjects</div></div>
+  <div class="stat-card"><div class="stat-top"><span class="stat-label">Class Average</span><span class="stat-icon">AVG</span></div><div class="stat-value" id="analyticsAverage">0%</div><div class="stat-foot">Average percentage</div></div>
+  <div class="stat-card"><div class="stat-top"><span class="stat-label">Top Percentage</span><span class="stat-icon">★</span></div><div class="stat-value" id="analyticsHighest">0%</div><div class="stat-foot" id="analyticsTopStudent">No records yet</div></div>
+  <div class="stat-card"><div class="stat-top"><span class="stat-label">Needs Improvement</span><span class="stat-icon">!</span></div><div class="stat-value" id="analyticsFailed">0</div><div class="stat-foot">Currently marked fail</div></div>
+ </div>
+ <div class="dashboard-grid">
+  <div class="panel"><div class="panel-heading"><div><h2>Subject Averages</h2><p>Average marks out of 100</p></div></div><div id="subjectAverages" class="kpi-list"></div><div id="subjectAveragesEmpty" class="empty-state hidden">Add students to see subject averages.</div></div>
+  <div class="panel"><div class="panel-heading"><div><h2>Grade Distribution</h2><p>Number of students in each grade</p></div></div><div id="gradeDistribution" class="grade-list"></div><div id="gradeEmpty" class="empty-state hidden">Grade distribution will appear here.</div></div>
+ </div>
+ <div class="panel"><div class="panel-heading"><div><h2>Performance Summary</h2><p>Based on your current student records</p></div></div><div id="analyticsSummary" class="notice-box">Add student records to generate a performance summary.</div></div>
+</section>
+
+<!-- SETTINGS -->
+<section class="page" id="page-settings">
+ <div class="page-heading">
+  <div><div class="eyebrow">PERSONALIZE YOUR WORKSPACE</div><h1>Settings</h1><p>Choose how ScholarDesk looks and behaves on this device.</p></div>
+  <button class="btn btn-secondary" id="resetSettingsBtn">Reset Preferences</button>
+ </div>
+
+ <div class="dashboard-grid">
+  <div>
+   <div class="panel">
+    <div class="panel-heading"><div><h2>Account Information</h2><p>Details for the account currently signed in</p></div><span class="pill pass">Signed in</span></div>
+    <div class="profile-card">
+     <div class="profile-avatar" id="profileAvatar">S</div>
+     <div><h2 id="settingsName">Student</h2><div class="muted" id="settingsEmail">—</div><div class="small" style="margin-top:5px">ScholarDesk account</div></div>
+    </div>
+    <hr class="form-divider">
+    <div class="notice-box">Your student records are scoped to your account. Account details shown here come from your current login.</div>
+   </div>
+
+   <div class="panel">
+    <div class="panel-heading"><div><h2>Appearance</h2><p>Adjust the look of your workspace</p></div></div>
+    <div class="preference-row">
+     <div><strong>Dark Mode</strong><p>Use a darker background and softer contrast.</p></div>
+     <label class="switch"><input type="checkbox" id="darkModeSetting"><span class="switch-track"></span></label>
+    </div>
+    <div class="preference-row">
+     <div><strong>Compact Tables</strong><p>Reduce row spacing to see more records.</p></div>
+     <label class="switch"><input type="checkbox" id="compactSetting"><span class="switch-track"></span></label>
+    </div>
+    <div class="preference-row">
+     <div><strong>Larger Text</strong><p>Increase the base text size throughout the app.</p></div>
+     <label class="switch"><input type="checkbox" id="largeTextSetting"><span class="switch-track"></span></label>
+    </div>
+   </div>
+
+   <div class="panel">
+    <div class="panel-heading"><div><h2>Table Preferences</h2><p>Control how student records are displayed</p></div></div>
+    <div class="preference-row">
+     <div><strong>Rows per page</strong><p>Choose how many students appear on one page.</p></div>
+     <div class="preference-control"><select id="pageSizeSetting"><option value="5">5 rows</option><option value="10">10 rows</option><option value="20">20 rows</option><option value="50">50 rows</option></select></div>
+    </div>
+    <div class="preference-row">
+     <div><strong>Default opening page</strong><p>Choose which section opens after login.</p></div>
+     <div class="preference-control"><select id="defaultPageSetting"><option value="dashboard">Dashboard</option><option value="students">Students</option><option value="details">Student Details</option><option value="results">Results</option><option value="analytics">Analytics</option></select></div>
+    </div>
+    <div class="preference-row">
+     <div><strong>Confirm before deleting</strong><p>Ask before permanently deleting a student record.</p></div>
+     <label class="switch"><input type="checkbox" id="confirmDeleteSetting"><span class="switch-track"></span></label>
+    </div>
+    <div class="form-actions"><button class="btn btn-primary" id="saveSettingsBtn">Save Preferences</button></div>
+   </div>
+  </div>
+
+  <div>
+   <div class="panel">
+    <div class="panel-heading"><div><h2>Data & Export</h2><p>Download your own student records</p></div></div>
+    <div class="notice-box">CSV export includes the records and personal details available in your account. Keep exported files private because they may contain personal information.</div>
+    <button class="btn btn-primary btn-block" style="margin-top:15px" id="settingsExportBtn">↓ Export My Student Data</button>
+    <button class="btn btn-secondary btn-block" style="margin-top:9px" id="settingsRefreshBtn">↻ Refresh Student Data</button>
+   </div>
+
+   <div class="panel">
+    <div class="panel-heading"><div><h2>Quick Settings</h2><p>Common display controls</p></div></div>
+    <button class="btn btn-secondary btn-block" id="quickThemeSetting">Switch Theme</button>
+    <button class="btn btn-secondary btn-block" style="margin-top:9px" id="quickCompactSetting">Toggle Compact Tables</button>
+    <button class="btn btn-secondary btn-block" style="margin-top:9px" id="quickDefaultPage">Open Default Page</button>
+   </div>
+
+   <div class="panel">
+    <div class="panel-heading"><div><h2>Session & Privacy</h2><p>End your current session safely</p></div></div>
+    <div class="notice-box">Logging out ends your current session on this browser. It does not delete your saved student records.</div>
+    <button class="btn btn-danger btn-block" style="margin-top:14px" id="settingsLogoutBtn">Log Out of ScholarDesk</button>
+   </div>
+
+   <div class="panel">
+    <div class="panel-heading"><div><h2>About ScholarDesk</h2><p>Application information</p></div></div>
+    <div class="preference-row"><div><strong>Application</strong><p>Student Result Analyzer</p></div><span class="pill">Web App</span></div>
+    <div class="preference-row"><div><strong>Storage</strong><p>SQLite database via Flask</p></div><span class="pill">Local</span></div>
+    <div class="preference-row"><div><strong>Preferences</strong><p>Saved in this browser</p></div><span class="pill">Personal</span></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ADD / EDIT STUDENT -->
+<section class="page" id="page-student-form">
+ <div class="page-heading">
+  <div><div class="eyebrow">STUDENT RECORD</div><h1 id="studentFormTitle">Add Student</h1><p>Fill in the personal information and marks below.</p></div>
+  <button class="btn btn-secondary" id="cancelStudentTop" type="button">← Back</button>
+ </div>
+
+ <form class="panel" id="studentForm">
+  <input type="hidden" id="studentId">
+  <h2 class="form-section-title">Personal Information</h2>
+  <div class="form-grid">
+   <div class="field"><label for="studentName">Full Name *</label><input id="studentName" required maxlength="100" placeholder="Student full name"></div>
+   <div class="field"><label for="rollNumber">Roll Number *</label><input id="rollNumber" required maxlength="40" placeholder="e.g. 249192"></div>
+   <div class="field"><label for="studentEmail">Email Address</label><input id="studentEmail" type="email" placeholder="student@example.com"></div>
+   <div class="field"><label for="studentPhone">Phone Number</label><input id="studentPhone" type="tel" maxlength="20" placeholder="Phone number"></div>
+   <div class="field"><label for="studentDob">Date of Birth</label><input id="studentDob" type="date"></div>
+   <div class="field"><label for="studentGender">Gender</label><select id="studentGender"><option value="">Select gender</option><option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option></select></div>
+   <div class="field span-two"><label for="studentAddress">Address</label><textarea id="studentAddress" maxlength="500" placeholder="Enter student address"></textarea></div>
+  </div>
+  <hr class="form-divider">
+  <h2 class="form-section-title">Academic Marks</h2>
+  <p class="muted">Enter marks out of 100 for each subject.</p>
+  <div class="marks-grid">
+   <div class="field"><label for="markPython">Python *</label><input id="markPython" type="number" min="0" max="100" step="0.01" required value="0"></div>
+   <div class="field"><label for="markJava">Java *</label><input id="markJava" type="number" min="0" max="100" step="0.01" required value="0"></div>
+   <div class="field"><label for="markDBMS">DBMS *</label><input id="markDBMS" type="number" min="0" max="100" step="0.01" required value="0"></div>
+   <div class="field"><label for="markWeb">Web Development *</label><input id="markWeb" type="number" min="0" max="100" step="0.01" required value="0"></div>
+   <div class="field"><label for="markNetworks">Computer Networks *</label><input id="markNetworks" type="number" min="0" max="100" step="0.01" required value="0"></div>
+  </div>
+  <div class="notice-box">Result rules: at least 33 marks in every subject to pass. The grade is calculated automatically after saving.</div>
+  <div class="form-actions">
+   <button class="btn btn-secondary" id="cancelStudentBtn" type="button">Cancel</button>
+   <button class="btn btn-primary" id="saveStudentBtn" type="submit">Save Student</button>
+  </div>
+ </form>
+</section>
+</main>
+
+<footer>ScholarDesk · Student Result Analyzer</footer>
+<div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+const SUBJECTS = [
+ {name:"Python",id:"markPython"},
+ {name:"Java",id:"markJava"},
+ {name:"DBMS",id:"markDBMS"},
+ {name:"Web Development",id:"markWeb"},
+ {name:"Computer Networks",id:"markNetworks"}
+];
+
+const PREF_KEY = "scholardesk-preferences";
+const THEME_KEY = "scholardesk-theme";
+
+let students = [];
+let currentUser = null;
+let authMode = "login";
+let currentPage = "dashboard";
+let previousPage = "students";
+let currentTablePage = 1;
+let toastTimer = null;
+let preferences = loadPreferences();
+
+function defaultPreferences(){
+ return {
+  theme:localStorage.getItem(THEME_KEY)==="dark"?"dark":"light",
+  compact:false,
+  largeText:false,
+  pageSize:10,
+  defaultPage:"dashboard",
+  confirmDelete:true
+ };
+}
+
+function loadPreferences(){
+ const defaults = defaultPreferences();
+ try {
+  const saved = JSON.parse(localStorage.getItem(PREF_KEY)||"{}");
+  return {...defaults,...saved};
+ } catch {
+  return defaults;
+ }
+}
+
+function savePreferencesToBrowser(){
+ localStorage.setItem(PREF_KEY,JSON.stringify(preferences));
+ localStorage.setItem(THEME_KEY,preferences.theme);
+}
+
+function escapeHtml(value){
+ return String(value??"").replace(/[&<>"']/g,ch=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ })[ch]);
+}
+
+function showToast(message,type="success"){
+ const toast=$("toast");
+ toast.textContent=message;
+ toast.className="toast "+(type==="error"?"error":"success");
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>toast.classList.add("hidden"),3500);
+}
+
+async function api(url,options={}){
+ const config={
+  credentials:"same-origin",
+  ...options,
+  headers:{
+   ...(options.body?{"Content-Type":"application/json"}:{}),
+   ...(options.headers||{})
+  }
+ };
+ const response=await fetch(url,config);
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok) throw new Error(data.message||"Something went wrong.");
+ return data;
+}
+
+/* Authentication */
+
+function setAuthMode(mode){
+ authMode=mode;
+ $("loginTab").classList.toggle("active",mode==="login");
+ $("registerTab").classList.toggle("active",mode==="register");
+ $("authNameField").classList.toggle("hidden",mode!=="register");
+ $("authName").required=mode==="register";
+ $("authPassword").autocomplete=mode==="register"?"new-password":"current-password";
+ $("authSubmit").textContent=mode==="register"?"Create Account":"Login";
+ $("authMessage").textContent="";
+}
+
+$("loginTab").addEventListener("click",()=>setAuthMode("login"));
+$("registerTab").addEventListener("click",()=>setAuthMode("register"));
+
+$("authForm").addEventListener("submit",async event=>{
+ event.preventDefault();
+ $("authMessage").textContent="";
+ const payload={
+  email:$("authEmail").value.trim(),
+  password:$("authPassword").value
+ };
+ if(authMode==="register") payload.name=$("authName").value.trim();
+
+ $("authSubmit").disabled=true;
+ try{
+  const endpoint=authMode==="register"?"/api/auth/register":"/api/auth/login";
+  const data=await api(endpoint,{method:"POST",body:JSON.stringify(payload)});
+  $("authPassword").value="";
+  currentUser=data.user;
+  await showWorkspace(data.user);
+  showToast(authMode==="register"?"Account created successfully!":"Welcome back!");
+ }catch(error){
+  $("authMessage").textContent=error.message;
+ }finally{
+  $("authSubmit").disabled=false;
+ }
+});
+
+async function checkAuth(){
+ try{
+  const data=await api("/api/auth/me");
+  if(data.authenticated&&data.user){
+   await showWorkspace(data.user);
+  }else{
+   document.body.classList.add("logged-out");
+  }
+ }catch{
+  document.body.classList.add("logged-out");
+ }
+}
+
+async function showWorkspace(user){
+ currentUser=user;
+ $("accountName").textContent=user.name;
+ $("accountAvatar").textContent=(user.name||"S").trim().charAt(0).toUpperCase();
+ $("settingsName").textContent=user.name;
+ $("settingsEmail").textContent=user.email;
+ $("profileAvatar").textContent=(user.name||"S").trim().charAt(0).toUpperCase();
+ $("welcomeTitle").textContent="Welcome back, "+user.name.split(" ")[0];
+ document.body.classList.remove("logged-out");
+ applyPreferencesToUI();
+ await refreshData(false);
+ showPage(preferences.defaultPage||"dashboard");
+}
+
+async function logout(){
+ try{
+  await api("/api/auth/logout",{method:"POST"});
+  students=[];
+  currentUser=null;
+  document.body.classList.add("logged-out");
+  $("authEmail").value="";
+  $("authPassword").value="";
+  setAuthMode("login");
+  showToast("You have been logged out.");
+ }catch(error){
+  showToast(error.message,"error");
+ }
+}
+
+$("logoutBtn").addEventListener("click",logout);
+$("settingsLogoutBtn").addEventListener("click",logout);
+
+/* Navigation */
+
+function showPage(name){
+ if(name==="student-form"){
+  previousPage=currentPage;
+ }else{
+  previousPage=name;
+ }
+ document.querySelectorAll(".page").forEach(page=>page.classList.remove("active"));
+ const target=$("page-"+name);
+ if(!target) return;
+ target.classList.add("active");
+ document.querySelectorAll("nav [data-page]").forEach(button=>{
+  button.classList.toggle("active",button.dataset.page===name);
+ });
+ currentPage=name;
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.querySelectorAll("nav [data-page]").forEach(button=>{
+ button.addEventListener("click",()=>showPage(button.dataset.page));
+});
+
+document.querySelectorAll("[data-goto]").forEach(button=>{
+ button.addEventListener("click",()=>showPage(button.dataset.goto));
+});
+
+document.querySelectorAll("[data-add-student]").forEach(button=>{
+ button.addEventListener("click",()=>openStudentForm());
+});
+
+/* Student data */
+
+async function refreshData(showMessage=true){
+ try{
+  const data=await api("/api/students");
+  students=data.students||[];
+  currentTablePage=1;
+  renderAll();
+
+  const summary=await api("/api/summary");
+  $("statStudents").textContent=summary.total_students;
+  $("statPassed").textContent=summary.passed;
+  $("statFailed").textContent=summary.failed;
+  $("statAverage").textContent=summary.average_percentage+"%";
+  $("analyticsPassRate").textContent=summary.pass_rate+"%";
+  $("analyticsAverage").textContent=summary.average_percentage+"%";
+  $("analyticsFailed").textContent=summary.failed;
+  renderAnalytics();
+
+  if(showMessage) showToast("Student data refreshed.");
+ }catch(error){
+  if(error.message.toLowerCase().includes("log in")){
+   document.body.classList.add("logged-out");
+  }
+  showToast(error.message,"error");
+ }
+}
+
+function statusPill(status){
+ return `<span class="pill ${status==="Pass"?"pass":"fail"}">${escapeHtml(status)}</span>`;
+}
+
+function renderAll(){
+ renderDashboard();
+ renderStudents();
+ renderDetails();
+ renderResults();
+}
+
+function renderDashboard(){
+ const recent=students.slice(0,5);
+ $("recentBody").innerHTML=recent.map(s=>`
+  <tr>
+   <td><div class="student-name">${escapeHtml(s.name)}</div><div class="small">${escapeHtml(s.roll_number)}</div></td>
+   <td>${s.percentage}%</td>
+   <td><span class="pill">${escapeHtml(s.grade)}</span></td>
+   <td>${statusPill(s.status)}</td>
+  </tr>`).join("");
+ $("recentEmpty").classList.toggle("hidden",recent.length>0);
+
+ $("dashboardSubjectsEmpty").classList.toggle("hidden",students.length>0);
+ $("dashboardSubjects").innerHTML=students.length?SUBJECTS.map(subject=>{
+  const avg=students.reduce((sum,s)=>sum+Number(s.marks[subject.name]||0),0)/students.length;
+  return `<div class="kpi-row">
+   <div class="kpi-label"><span>${escapeHtml(subject.name)}</span><strong>${avg.toFixed(1)}%</strong></div>
+   <div class="progress"><span style="width:${Math.min(100,Math.max(0,avg))}%"></span></div>
+  </div>`;
+ }).join(""):"";
+}
+
+/* Student table, sorting and pagination */
+
+function getFilteredStudents(){
+ const query=$("studentsSearch").value.trim().toLowerCase();
+ const sort=$("studentSort").value;
+ let filtered=students.filter(s=>
+  s.name.toLowerCase().includes(query)||s.roll_number.toLowerCase().includes(query)
+ );
+ filtered.sort((a,b)=>{
+  if(sort==="name") return a.name.localeCompare(b.name);
+  if(sort==="percentage-high") return b.percentage-a.percentage;
+  if(sort==="percentage-low") return a.percentage-b.percentage;
+  if(sort==="roll") return a.roll_number.localeCompare(b.roll_number,undefined,{numeric:true});
+  return b.id-a.id;
+ });
+ return filtered;
+}
+
+function renderStudents(){
+ const filtered=getFilteredStudents();
+ const pageSize=Number(preferences.pageSize)||10;
+ const totalPages=Math.max(1,Math.ceil(filtered.length/pageSize));
+ currentTablePage=Math.min(currentTablePage,totalPages);
+ const start=(currentTablePage-1)*pageSize;
+ const pageItems=filtered.slice(start,start+pageSize);
+
+ $("studentCountLabel").textContent=filtered.length+" record"+(filtered.length===1?"":"s");
+ $("studentsBody").innerHTML=pageItems.map(s=>`
+  <tr>
+   <td><div class="student-name">${escapeHtml(s.name)}</div><div class="small">ID: ${s.id}</div></td>
+   <td>${escapeHtml(s.roll_number)}</td>
+   <td>${s.total} / 500</td>
+   <td><strong>${s.percentage}%</strong></td>
+   <td><span class="pill">${escapeHtml(s.grade)}</span></td>
+   <td>${statusPill(s.status)}</td>
+   <td><div class="button-row">
+    <button class="btn btn-secondary btn-small" data-edit="${s.id}">Edit</button>
+    <button class="btn btn-danger btn-small" data-delete="${s.id}">Delete</button>
+   </div></td>
+  </tr>`).join("");
+
+ $("studentsEmpty").classList.toggle("hidden",filtered.length>0);
+ $("paginationInfo").textContent=filtered.length
+  ?`Showing ${start+1}–${Math.min(start+pageSize,filtered.length)} of ${filtered.length}`
+  :"Showing 0 records";
+ $("prevPage").disabled=currentTablePage<=1;
+ $("nextPage").disabled=currentTablePage>=totalPages;
+ $("studentsTable").classList.toggle("compact-table",preferences.compact);
+
+ $("studentsBody").querySelectorAll("[data-edit]").forEach(button=>{
+  button.addEventListener("click",()=>{
+   const student=students.find(s=>s.id===Number(button.dataset.edit));
+   if(student) openStudentForm(student);
+  });
+ });
+ $("studentsBody").querySelectorAll("[data-delete]").forEach(button=>{
+  button.addEventListener("click",()=>deleteStudent(Number(button.dataset.delete)));
+ });
+}
+
+$("studentsSearch").addEventListener("input",()=>{currentTablePage=1;renderStudents()});
+$("studentSort").addEventListener("change",()=>{currentTablePage=1;renderStudents()});
+$("prevPage").addEventListener("click",()=>{if(currentTablePage>1){currentTablePage--;renderStudents()}});
+$("nextPage").addEventListener("click",()=>{currentTablePage++;renderStudents()});
+
+/* Student details */
+
+function renderDetails(){
+ const query=$("detailsSearch").value.trim().toLowerCase();
+ const filtered=students.filter(s=>
+  [s.name,s.roll_number,s.email,s.phone,s.dob,s.gender,s.address]
+   .join(" ").toLowerCase().includes(query)
+ );
+ $("detailsCount").textContent=filtered.length+" record"+(filtered.length===1?"":"s");
+ $("detailsBody").innerHTML=filtered.map(s=>`
+  <tr>
+   <td><div class="student-name">${escapeHtml(s.name)}</div><div class="small">${escapeHtml(s.roll_number)}</div></td>
+   <td>${escapeHtml(s.email||"—")}</td><td>${escapeHtml(s.phone||"—")}</td>
+   <td>${escapeHtml(s.dob||"—")}</td><td>${escapeHtml(s.gender||"—")}</td>
+   <td>${escapeHtml(s.address||"—")}</td>
+   <td><button class="btn btn-secondary btn-small" data-detail-edit="${s.id}">Edit</button></td>
+  </tr>`).join("");
+ $("detailsEmpty").classList.toggle("hidden",filtered.length>0);
+ $("detailsBody").classList.toggle("compact-table",preferences.compact);
+
+ $("detailsBody").querySelectorAll("[data-detail-edit]").forEach(button=>{
+  button.addEventListener("click",()=>{
+   const student=students.find(s=>s.id===Number(button.dataset.detailEdit));
+   if(student) openStudentForm(student);
+  });
+ });
+}
+
+$("detailsSearch").addEventListener("input",renderDetails);
+
+/* Results */
+
+function renderResults(){
+ const query=$("resultsSearch").value.trim().toLowerCase();
+ const filtered=students.filter(s=>
+  s.name.toLowerCase().includes(query)||s.roll_number.toLowerCase().includes(query)
+ );
+ $("resultsBody").innerHTML=filtered.map(s=>`
+  <tr>
+   <td><strong>${escapeHtml(s.name)}</strong><div class="small">${escapeHtml(s.roll_number)}</div></td>
+   <td>${s.marks["Python"]}</td><td>${s.marks["Java"]}</td><td>${s.marks["DBMS"]}</td>
+   <td>${s.marks["Web Development"]}</td><td>${s.marks["Computer Networks"]}</td>
+   <td>${s.total}/500</td><td>${s.percentage}%</td>
+   <td><span class="pill">${escapeHtml(s.grade)}</span></td><td>${statusPill(s.status)}</td>
+  </tr>`).join("");
+ $("resultsEmpty").classList.toggle("hidden",filtered.length>0);
+ $("resultsBody").classList.toggle("compact-table",preferences.compact);
+}
+$("resultsSearch").addEventListener("input",renderResults);
+
+/* Analytics */
+
+function renderAnalytics(){
+ const top=[...students].sort((a,b)=>b.percentage-a.percentage)[0];
+ $("analyticsHighest").textContent=top?top.percentage+"%":"0%";
+ $("analyticsTopStudent").textContent=top?top.name:"No records yet";
+
+ $("subjectAveragesEmpty").classList.toggle("hidden",students.length>0);
+ $("subjectAverages").innerHTML=students.length?SUBJECTS.map(subject=>{
+  const avg=students.reduce((sum,s)=>sum+Number(s.marks[subject.name]||0),0)/students.length;
+  return `<div class="kpi-row">
+   <div class="kpi-label"><span>${escapeHtml(subject.name)}</span><strong>${avg.toFixed(1)} / 100</strong></div>
+   <div class="progress"><span style="width:${Math.min(100,Math.max(0,avg))}%"></span></div>
+  </div>`;
+ }).join(""):"";
+
+ const grades=["A+","A","B","C","D","E","F"];
+ $("gradeEmpty").classList.toggle("hidden",students.length>0);
+ $("gradeDistribution").innerHTML=students.length?grades.map(grade=>{
+  const count=students.filter(s=>s.grade===grade).length;
+  return `<div class="grade-row"><span class="grade-label">${grade}</span><div class="grade-bar"><span style="width:${count/students.length*100}%"></span></div><span class="grade-count">${count}</span></div>`;
+ }).join(""):"";
+
+ if(!students.length){
+  $("analyticsSummary").textContent="Add student records to generate a performance summary.";
+ }else{
+  const passed=students.filter(s=>s.status==="Pass").length;
+  const failed=students.length-passed;
+  const avg=students.reduce((sum,s)=>sum+s.percentage,0)/students.length;
+  $("analyticsSummary").textContent=
+   `You have ${students.length} student records. ${passed} passed and ${failed} failed. The class average is ${avg.toFixed(2)}%. ${top?top.name+" has the highest percentage at "+top.percentage+"%.":""}`;
+ }
+}
+
+$("analyticsRefreshBtn").addEventListener("click",()=>refreshData(true));
+
+/* Add / edit student form */
+
+function openStudentForm(student=null){
+ $("studentForm").reset();
+ $("studentId").value=student?student.id:"";
+ $("studentName").value=student?.name||"";
+ $("rollNumber").value=student?.roll_number||"";
+ $("studentEmail").value=student?.email||"";
+ $("studentPhone").value=student?.phone||"";
+ $("studentDob").value=student?.dob||"";
+ $("studentGender").value=student?.gender||"";
+ $("studentAddress").value=student?.address||"";
+
+ $("markPython").value=student?.marks?.["Python"]??0;
+ $("markJava").value=student?.marks?.["Java"]??0;
+ $("markDBMS").value=student?.marks?.["DBMS"]??0;
+ $("markWeb").value=student?.marks?.["Web Development"]??0;
+ $("markNetworks").value=student?.marks?.["Computer Networks"]??0;
+
+ $("studentFormTitle").textContent=student?"Edit Student":"Add Student";
+ $("saveStudentBtn").textContent=student?"Update Student":"Save Student";
+ showPage("student-form");
+}
+
+$("dashboardAddBtn").addEventListener("click",()=>openStudentForm());
+$("studentsAddBtn").addEventListener("click",()=>openStudentForm());
+$("detailsAddBtn").addEventListener("click",()=>openStudentForm());
+$("cancelStudentBtn").addEventListener("click",()=>showPage(previousPage==="student-form"?"students":previousPage));
+$("cancelStudentTop").addEventListener("click",()=>showPage(previousPage==="student-form"?"students":previousPage));
+
+$("studentForm").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const marks={};
+
+ for(const subject of SUBJECTS){
+  const input=$(subject.id);
+  const value=Number(input.value);
+  if(input.value.trim()===""||!Number.isFinite(value)||value<0||value>100){
+   showToast(`Enter valid marks for ${subject.name} (0–100).`,"error");
+   input.focus();
+   return;
+  }
+  marks[subject.name]=value;
+ }
+
+ const payload={
+  name:$("studentName").value.trim(),
+  roll_number:$("rollNumber").value.trim(),
+  email:$("studentEmail").value.trim(),
+  phone:$("studentPhone").value.trim(),
+  dob:$("studentDob").value,
+  gender:$("studentGender").value,
+  address:$("studentAddress").value.trim(),
+  marks
+ };
+ const id=$("studentId").value;
+ const endpoint=id?`/api/students/${id}`:"/api/students";
+ $("saveStudentBtn").disabled=true;
+
+ try{
+  await api(endpoint,{
+   method:id?"PUT":"POST",
+   body:JSON.stringify(payload)
+  });
+  await refreshData(false);
+  showPage(id?"students":(previousPage==="student-form"?"students":previousPage));
+  showToast(id?"Student updated successfully.":"Student added successfully.");
+ }catch(error){
+  showToast(error.message,"error");
+ }finally{
+  $("saveStudentBtn").disabled=false;
+ }
+});
+
+async function deleteStudent(id){
+ const student=students.find(s=>s.id===id);
+ if(!student)return;
+
+ if(preferences.confirmDelete&&!confirm(`Delete ${student.name}'s record? This cannot be undone.`)){
+  return;
+ }
+
+ try{
+  await api(`/api/students/${id}`,{method:"DELETE"});
+  await refreshData(false);
+  showToast("Student record deleted.");
+ }catch(error){
+  showToast(error.message,"error");
+ }
+}
+
+/* CSV export */
+
+function exportCsv(){
+ window.location.href="/api/export";
+}
+$("exportBtn").addEventListener("click",exportCsv);
+$("resultsExportBtn").addEventListener("click",exportCsv);
+$("settingsExportBtn").addEventListener("click",exportCsv);
+$("quickExport").addEventListener("click",exportCsv);
+
+/* Settings */
+
+function applyPreferencesToUI(){
+ document.body.classList.toggle("dark",preferences.theme==="dark");
+ document.body.classList.toggle("large-text",preferences.largeText);
+
+ $("themeBtn").textContent=preferences.theme==="dark"?"☀ Light":"☾ Dark";
+ $("darkModeSetting").checked=preferences.theme==="dark";
+ $("compactSetting").checked=preferences.compact;
+ $("largeTextSetting").checked=preferences.largeText;
+ $("pageSizeSetting").value=String(preferences.pageSize);
+ $("defaultPageSetting").value=preferences.defaultPage;
+ $("confirmDeleteSetting").checked=preferences.confirmDelete;
+
+ document.querySelectorAll("#studentsTable,#detailsBody,#resultsBody").forEach(element=>{
+  element.classList.toggle("compact-table",preferences.compact);
+ });
+}
+
+function saveSettingsFromControls(){
+ preferences.theme=$("darkModeSetting").checked?"dark":"light";
+ preferences.compact=$("compactSetting").checked;
+ preferences.largeText=$("largeTextSetting").checked;
+ preferences.pageSize=Number($("pageSizeSetting").value)||10;
+ preferences.defaultPage=$("defaultPageSetting").value;
+ preferences.confirmDelete=$("confirmDeleteSetting").checked;
+
+ savePreferencesToBrowser();
+ applyPreferencesToUI();
+ currentTablePage=1;
+ renderAll();
+ showToast("Preferences saved on this browser.");
+}
+
+$("saveSettingsBtn").addEventListener("click",saveSettingsFromControls);
+
+$("darkModeSetting").addEventListener("change",()=>{
+ preferences.theme=$("darkModeSetting").checked?"dark":"light";
+ savePreferencesToBrowser();
+ applyPreferencesToUI();
+});
+
+$("compactSetting").addEventListener("change",()=>{
+ preferences.compact=$("compactSetting").checked;
+ savePreferencesToBrowser();
+ applyPreferencesToUI();
+ renderAll();
+});
+
+$("largeTextSetting").addEventListener("change",()=>{
+ preferences.largeText=$("largeTextSetting").checked;
+ savePreferencesToBrowser();
+ applyPreferencesToUI();
+});
+
+$("pageSizeSetting").addEventListener("change",()=>{
+ preferences.pageSize=Number($("pageSizeSetting").value)||10;
+ savePreferencesToBrowser();
+ currentTablePage=1;
+ renderStudents();
+ showToast("Rows per page updated.");
+});
+
+$("defaultPageSetting").addEventListener("change",()=>{
+ preferences.defaultPage=$("defaultPageSetting").value;
+ savePreferencesToBrowser();
+ showToast("Default opening page saved.");
+});
+
+$("confirmDeleteSetting").addEventListener("change",()=>{
+ preferences.confirmDelete=$("confirmDeleteSetting").checked;
+ savePreferencesToBrowser();
+ showToast("Delete confirmation preference updated.");
+});
+
+$("themeBtn").addEventListener("click",()=>{
+ preferences.theme=preferences.theme==="dark"?"light":"dark";
+ savePreferencesToBrowser();
+ applyPreferencesToUI();
+});
+
+$("quickThemeSetting").addEventListener("click",()=>{
+ preferences.theme=preferences.theme==="dark"?"light":"dark";
+ savePreferencesToBrowser();
+ applyPreferencesToUI();
+ showToast("Theme updated.");
+});
+
+$("quickCompactSetting").addEventListener("click",()=>{
+ preferences.compact=!preferences.compact;
+ savePreferencesToBrowser();
+ applyPreferencesToUI();
+ renderAll();
+ showToast(preferences.compact?"Compact tables enabled.":"Compact tables disabled.");
+});
+
+$("quickDefaultPage").addEventListener("click",()=>{
+ showPage(preferences.defaultPage||"dashboard");
+});
+
+$("settingsRefreshBtn").addEventListener("click",()=>refreshData(true));
+
+$("resetSettingsBtn").addEventListener("click",()=>{
+ if(!confirm("Reset your display and table preferences to their defaults?"))return;
+ preferences={
+  theme:"light",
+  compact:false,
+  largeText:false,
+  pageSize:10,
+  defaultPage:"dashboard",
+  confirmDelete:true
+ };
+ savePreferencesToBrowser();
+ applyPreferencesToUI();
+ currentTablePage=1;
+ renderAll();
+ showToast("Preferences reset to defaults.");
+});
+
+applyPreferencesToUI();
+checkAuth();
+</script>
+</body>
+</html>
