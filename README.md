@@ -4,6 +4,9 @@
 
 ScholarDesk is a Python-based Student Result Analyzer developed to manage student records and analyze academic performance through a simple web interface.
 
+
+
+
 ## Features
 
 * Student registration and login
@@ -44,14 +47,6 @@ ScholarDesk is a Python-based Student Result Analyzer developed to manage studen
 6. Dashboard and analytics display academic performance.
 7. Student records can be updated, deleted, or exported.
 
-## How to Run
-
-1. Install Python on your computer.
-2. Open the project folder in VS Code.
-3. Open the terminal in the project directory.
-4. Install the required dependencies using the project's `requirements.txt`, if available.
-5. Run the Flask application using the command specified by the project.
-6. Open the local URL displayed in the terminal.
 
 ## Testing
 
