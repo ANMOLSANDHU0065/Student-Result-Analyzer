@@ -8,7 +8,8 @@ ScholarDesk is a Python-based Student Result Analyzer developed to manage studen
 Explore my Student Result Analyzer project here:
 
 🚀 Live Demo
-[View Live Project](https://student-result-analyzer-zi3h.onrender.com)
+[View Live Project]
+(https://student-result-analyzer-zi3h.onrender.com)
 
 
 ## Features
